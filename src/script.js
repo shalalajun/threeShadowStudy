@@ -8,8 +8,8 @@ import { ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer.js'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 
 
-const intensity_0 = new THREE.Vector4(1, 0, 0, 0);
-const color = new THREE.Color(0xE1E5EA);
+let intensity_0 = new THREE.Vector4(1, 0, 0, 0);
+const color = new THREE.Color(0xFAF3F3);
 let isMobile = false;
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -80,6 +80,9 @@ scene.add( shadowCameraHelper );
  */
 
 const uniforms = {
+    uTime: {
+        value: 0
+    },
     uColor: {
         value: new THREE.Color(color)
     },
@@ -94,6 +97,9 @@ const uniforms = {
     },
     uShadowCameraV: {
         value: light.shadow.camera.matrixWorldInverse
+    },
+    uIntensity_0: {
+        value: intensity_0
     },
 }
 const material = new THREE.ShaderMaterial({
@@ -157,11 +163,11 @@ const shadowMaterial = new THREE.ShaderMaterial({
 
 
 const depthViewer = new ShadowMapViewer(light);
-depthViewer.size.set( 500, 500 );
+depthViewer.size.set( 200, 200 );
 
 
 renderer.setRenderTarget(null);
-depthViewer.render( renderer );
+
 
 
 
@@ -184,6 +190,8 @@ const tick = () =>
     ground.material = material
     renderer.setRenderTarget(null);
     renderer.render(scene, camera);
+
+    depthViewer.render( renderer );
 
     //renderer.render(scene, camera);
 
@@ -222,7 +230,7 @@ function createControls(){
                 intensity_0.y = 1;
                 break;
             case "shadow":
-                this.intensity_0.z = 1;
+                intensity_0.z = 1;
                 break;
             case "lighting":
                 intensity_0.w = 1;
