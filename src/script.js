@@ -6,10 +6,13 @@ import shadowFragment from './shaders/shadowFragment.glsl'
 import fragment from './shaders/fragment.glsl'
 import { ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer.js'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-
+let girl;
 let intensity_0 = new THREE.Vector4(1, 0, 0, 0);
-const color = new THREE.Color(0xFAF3F3);
+const color = new THREE.Color(0xE1E5EA);
+const shadowColor = new THREE.Color(0x1e9c7a);
+
 let isMobile = false;
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -80,6 +83,9 @@ scene.add( shadowCameraHelper );
  */
 
 const uniforms = {
+    shadowColor:{
+        value: shadowColor
+    },
     uTime: {
         value: 0
     },
@@ -182,12 +188,14 @@ const tick = () =>
 
     mesh.material = shadowMaterial
     ground.material = shadowMaterial
+    girl.material = shadowMaterial
 
     renderer.setRenderTarget(light.shadow.map)
     renderer.render(scene, light.shadow.camera)
 
     mesh.material = material
     ground.material = material
+    girl.material = material
     renderer.setRenderTarget(null);
     renderer.render(scene, camera);
 
@@ -198,7 +206,7 @@ const tick = () =>
     window.requestAnimationFrame(tick);
 
 }
-
+modelLoad();
 createControls();
 tick();
 
@@ -238,3 +246,22 @@ function createControls(){
         }
     });
 }
+
+function modelLoad()
+    {
+        const loader = new GLTFLoader();
+        loader.load(
+            './mamondegirl_1.glb',(gltf)=>{
+             const model = gltf.scene;
+             girl = model.getObjectByName('Girl_mesh');
+             girl.material = new THREE.ShaderMaterial(
+                {
+                    vertexShader:vertex,
+                    fragmentShader:fragment,
+                    uniforms: uniforms
+                }
+             )
+             scene.add(gltf.scene);
+            }
+        )
+    }

@@ -2,6 +2,7 @@ uniform vec3 uColor;
 uniform sampler2D uDepthMap;
 uniform vec3 uLightPos;
 uniform vec4 uIntensity_0;
+uniform vec3 shadowColor;
 
 varying vec3 vNormal;
 varying vec4 vShadowCoord;
@@ -48,7 +49,9 @@ void main(){
     vec3 color = vec3(0.0);
 
     if(uIntensity_0.x == 1.0){
-        color = mix(uColor - 0.1, uColor + 0.1, shading);
+        //color = mix(uColor-0.1, uColor + 0.1, shading);기본 아래는 컬러그림자
+        color = mix(shadowColor,1.0 - vec3(0.0,0.0,0.0), shading);
+        color += uColor * 0.5;
     } 
     else if(uIntensity_0.y == 1.0){
         color = vec3(shading);
