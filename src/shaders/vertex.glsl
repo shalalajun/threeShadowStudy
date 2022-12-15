@@ -15,4 +15,6 @@ void main(){
     // Pass to fragment shader and compare with depth map.
 
     vShadowCoord = uShadowCameraP * uShadowCameraV * modelMatrix * vec4(pos, 1.0);
+
+ 
 }

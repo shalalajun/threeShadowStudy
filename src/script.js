@@ -32,6 +32,8 @@ const light = new THREE.DirectionalLight(0xffffff, 1.0);
 light.position.set(-60, 50, 40);
 scene.add(light)
 
+const girlMaterial = new THREE.MeshStandardMaterial();
+
 
 /**
  * Sizes
@@ -169,7 +171,7 @@ const shadowMaterial = new THREE.ShaderMaterial({
 
 
 const depthViewer = new ShadowMapViewer(light);
-depthViewer.size.set( 200, 200 );
+depthViewer.size.set( 600, 600 );
 
 
 renderer.setRenderTarget(null);
@@ -188,14 +190,17 @@ const tick = () =>
 
     mesh.material = shadowMaterial
     ground.material = shadowMaterial
-    girl.material = shadowMaterial
+    // girl.material = shadowMaterial
+   
 
     renderer.setRenderTarget(light.shadow.map)
     renderer.render(scene, light.shadow.camera)
 
     mesh.material = material
     ground.material = material
-    girl.material = material
+    // girl.material = shadowMaterial
+    
+
     renderer.setRenderTarget(null);
     renderer.render(scene, camera);
 
@@ -206,9 +211,25 @@ const tick = () =>
     window.requestAnimationFrame(tick);
 
 }
-modelLoad();
+
+
+
+modelLoad('Girl_mesh');
+girl = scene.getObjectByName('Girl_mesh')
+girl.parent.material = shadowMaterial
+console.log(girl.parent.material)
+// scene.traverse((child) =>{
+//     if(child.name == 'Girl_mesh')
+//     {
+//         child.material = shadowMaterial
+//         console.log(child)
+//         child.material.needsUpdate = true
+//     }
+// })
 createControls();
 tick();
+
+
 
 function createControls(){
     let params = {
@@ -247,21 +268,23 @@ function createControls(){
     });
 }
 
-function modelLoad()
+function modelLoad(name)
     {
+        var parent = new THREE.Object3D();
+        parent.name = name;
+        scene.add(parent);
+
         const loader = new GLTFLoader();
         loader.load(
             './mamondegirl_1.glb',(gltf)=>{
              const model = gltf.scene;
-             girl = model.getObjectByName('Girl_mesh');
-             girl.material = new THREE.ShaderMaterial(
-                {
-                    vertexShader:vertex,
-                    fragmentShader:fragment,
-                    uniforms: uniforms
-                }
-             )
-             scene.add(gltf.scene);
+             var parent = scene.getObjectByName(name);
+             if(parent)
+             {
+                parent.add(model);
+             }
+            
             }
         )
     }
+
