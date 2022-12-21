@@ -8,10 +8,9 @@ import { ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer.js'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-let girl;
 let intensity_0 = new THREE.Vector4(1, 0, 0, 0);
 const color = new THREE.Color(0xE1E5EA);
-const shadowColor = new THREE.Color(0x1e9c7a);
+const shadowColor = new THREE.Color(0xf3408c);
 
 let isMobile = false;
 // Canvas
@@ -190,7 +189,10 @@ const tick = () =>
 
     mesh.material = shadowMaterial
     ground.material = shadowMaterial
-    // girl.material = shadowMaterial
+    girl.traverse((gltf)=>{
+        gltf.material = shadowMaterial
+    })
+   
    
 
     renderer.setRenderTarget(light.shadow.map)
@@ -198,8 +200,10 @@ const tick = () =>
 
     mesh.material = material
     ground.material = material
-    // girl.material = shadowMaterial
-    
+    girl.traverse((gltf)=>{
+        gltf.material = material
+    })
+   
 
     renderer.setRenderTarget(null);
     renderer.render(scene, camera);
@@ -215,17 +219,7 @@ const tick = () =>
 
 
 modelLoad('Girl_mesh');
-girl = scene.getObjectByName('Girl_mesh')
-girl.parent.material = shadowMaterial
-console.log(girl.parent.material)
-// scene.traverse((child) =>{
-//     if(child.name == 'Girl_mesh')
-//     {
-//         child.material = shadowMaterial
-//         console.log(child)
-//         child.material.needsUpdate = true
-//     }
-// })
+const girl = scene.getObjectByName('Girl_mesh')
 createControls();
 tick();
 
@@ -235,7 +229,10 @@ function createControls(){
     let params = {
         depthmapViewer: isMobile ? false : true,
         visibleShadowCamera: true,
-        output: "color shading"
+        output: "color shading",
+        color: 0xfffff,
+        shadowColor: 0x333333
+
     }
 
     let gui = new GUI();
@@ -266,6 +263,15 @@ function createControls(){
                 break;
         }
     });
+
+    gui.addColor(params, "color").onChange(() =>{
+        uniforms.uColor.value.set(params.color)
+    });
+
+    gui.addColor(params, "shadowColor").onChange(() =>{
+        uniforms.shadowColor.value.set(params.shadowColor)
+    })
+
 }
 
 function modelLoad(name)
@@ -279,6 +285,7 @@ function modelLoad(name)
             './mamondegirl_1.glb',(gltf)=>{
              const model = gltf.scene;
              var parent = scene.getObjectByName(name);
+             
              if(parent)
              {
                 parent.add(model);
