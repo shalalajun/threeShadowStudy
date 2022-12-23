@@ -12,6 +12,9 @@ let intensity_0 = new THREE.Vector4(1, 0, 0, 0);
 const color = new THREE.Color(0xE1E5EA);
 const shadowColor = new THREE.Color(0x333333);
 
+let uniforms;
+
+
 let isMobile = false;
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -21,8 +24,18 @@ const scene = new THREE.Scene()
 
 scene.background = new THREE.Color(0xE1E5EA)
 
+let texture1 = new THREE.TextureLoader().load('textures/girl_basic.jpg');
+//let texture1 = new THREE.TextureLoader().load('door.jpg');
+texture1.wrapS = THREE.RepeatWrapping;
+texture1.wrapT = THREE.RepeatWrapping;
+texture1.repeat.set( 1, 1 );
+texture1.flipY = false;
+texture1.needsUpdate = true;
+
+//console.log(texture1)
 
 
+    
 /**
  * 라이트를 먼저 만든다.
  */
@@ -31,7 +44,7 @@ const light = new THREE.DirectionalLight(0xffffff, 1.0);
 light.position.set(-60, 50, 40);
 scene.add(light)
 
-const girlMaterial = new THREE.MeshStandardMaterial();
+const girlMaterial = new THREE.MeshStandardMaterial({map:texture1});
 
 
 /**
@@ -83,7 +96,7 @@ const shadowCameraHelper = new THREE.CameraHelper( light.shadow.camera );
  * Object
  */
 
-const uniforms = {
+uniforms = {
     shadowColor:{
         value: shadowColor
     },
@@ -108,7 +121,13 @@ const uniforms = {
     uIntensity_0: {
         value: intensity_0
     },
+
+    u_texture : {
+        vaule: texture1
+    }
 }
+
+
 const material = new THREE.ShaderMaterial({
     vertexShader : vertex,
     fragmentShader : fragment,
@@ -202,6 +221,8 @@ const tick = () =>
     ground.material = material
     girl.traverse((gltf)=>{
         gltf.material = material
+        gltf.material.needsUpdate = true
+        
     })
    
 

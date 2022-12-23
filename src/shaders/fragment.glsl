@@ -1,14 +1,22 @@
+  #define USE_SKINNING
+
 uniform vec3 uColor;
 uniform sampler2D uDepthMap;
+uniform sampler2D u_texture;
 uniform vec3 uLightPos;
 uniform vec4 uIntensity_0;
 uniform vec3 shadowColor;
 
+
+varying vec2 vUv;
 varying vec3 vNormal;
 varying vec4 vShadowCoord;
 
+
 // https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderChunk/packing.glsl.js#L24
 #include <packing>
+#include <common>
+
 
 float frustumTest(vec3 shadowCoord, float shadowFactor){
     bvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );
@@ -26,6 +34,8 @@ float frustumTest(vec3 shadowCoord, float shadowFactor){
 
 void main(){
 
+   
+    vec4 tex = texture2D(u_texture, vUv.xy);
     float cosTheta = dot(normalize(uLightPos), vNormal);
     float difLight = max(0.0, cosTheta);
 
@@ -69,6 +79,7 @@ void main(){
 
     //vec3 color = mix(uColor  - 0.3 , uColor + 0.5, mix(uColor, vec3(1.0,1.0,0.0), 1.0 - shading ));//그림자 컬러? 가능할까?
     // check the result of the shadow factor.
-
-    gl_FragColor = vec4(vec3(color), 1.0);
+    vec3 finCol = tex.rgb * color;
+    gl_FragColor = vec4(vec3(finCol), 1.0);
+   
 }

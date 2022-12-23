@@ -4,9 +4,11 @@ uniform mat4 uShadowCameraV;
 varying vec4 vShadowCoord;
 
 varying vec3 vNormal;
+varying vec2 vUv;
 
 void main(){
 
+    vUv = uv;
     vNormal = normal;
     vec3 pos = position;
 
