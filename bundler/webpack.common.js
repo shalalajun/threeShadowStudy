@@ -4,7 +4,7 @@ const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
 
 module.exports = {
-    entry: path.resolve(__dirname, '../src/script_basic_toon.js'),
+    entry: path.resolve(__dirname, '../src/script_basic02.js'),
     output:
     {
         hashFunction: 'xxhash64',

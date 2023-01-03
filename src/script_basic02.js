@@ -189,6 +189,7 @@ const tick = () =>
 
     mesh.material = shadowMaterial
     ground.material = shadowMaterial
+ 
     girl.traverse((gltf)=>{
         gltf.material = shadowMaterial
     })
